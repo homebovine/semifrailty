@@ -139,7 +139,7 @@ fb21 <- function(ba,  bb, Afun, afun,  bg, x, t){
     integrand2 <- Vectorize(integrand2)
     b2 <- function(i){
         #c(integrate(integrand1, 0.001, mtau, i)$value, integrate(integrand2, 0.001, mtau, i)$value)
-        c(integral(integrand2, 0.001, mtau,  method = "Simpson", vectorized = T, arrayValued = T, waypoints = NULL, reltol = 1e-05, abstol = 1e-5, i))
+        c(integral(integrand2, 0.001, mtau,  method = "Simpson", vectorized = T, arrayValued = T, reltol = 1e-05, abstol = 1e-5, i))
     }
     t(do.call(rbind, lapply(1 : m, b2)))
 }
@@ -225,7 +225,7 @@ fb22 <- function(ba,  bb, Afun, afun,  bg, x, t){
     #integrand2 <- Vectorize(integrand2)
     b2 <- function(i){
 
-        c(integral(integrand1, 0.001, mtau,  method = "Simpson", vectorized = T, arrayValued = T, waypoints = NULL, reltol = 1e-05, abstol = 1e-5, i))
+        c(integral(integrand1, 0.001, mtau,  method = "Simpson", vectorized = T, arrayValued = T, reltol = 1e-05, abstol = 1e-5, i))
     }
     t(do.call(rbind, lapply(1 : m, b2)))
 }
@@ -318,14 +318,14 @@ scorealpha <- function(i, data,  ba, bb, Afun, afun, bg, br, t, me2){
     if(d == 1){
 
 #        res <-  ddG(mu, bg, br)/dG(mu, bg, br)  * expbbx * c(1, y - t) + c(0, 1)/ a- ((numf/ sumexprc) - nums/(sumexpc)) - dG(mu, bg, br) * expbbx * c(1, y- t) -  nums/(sumexpc)
-        res <- (ddG(mu, bg, br)/dG(mu, bg, br)  * expbbx * c(1, y - t) + c(0, 1)/ a- ((numf/ sumexprc) - nums/(sumexpc))) - integral(compens, 0.0001, y, method = "Simpson", vectorized = TRUE, arrayValued = TRUE, waypoints = NULL, reltol = 1e-08, abstol = 0)
+        res <- (ddG(mu, bg, br)/dG(mu, bg, br)  * expbbx * c(1, y - t) + c(0, 1)/ a- ((numf/ sumexprc) - nums/(sumexpc))) - integral(compens, 0.0001, y, method = "Simpson", vectorized = TRUE, arrayValued = TRUE, reltol = 1e-08, abstol = 0)
         #res2nd <- t(ba) %*% (((numf/ sumexprc) - nums/(sumexpc)) +  nums/sumexpc) 
         #res <- -(log(dG(mu, bg, br)) +  log(a * expbbx) - G(mu, bg, br) - (res2nd)  )
 
     }else{
       
     # res <- - dG(mu, bg, br) * expbbx * c(1, y - t) -  nums/(sumexpc)
-        res <- -integral(compens, 0.0001, y, method = "Simpson", vectorized = TRUE, arrayValued = TRUE, waypoints = NULL, reltol = 1e-08, abstol = 0)
+        res <- -integral(compens, 0.0001, y, method = "Simpson", vectorized = TRUE, arrayValued = TRUE, reltol = 1e-08, abstol = 0)
       #  res2nd <- t(ba) %*% (nums/sumexpc) 
        # res <- G(mu, bg, br) + res2nd#t(res2nd) %*% ba
     }
@@ -400,6 +400,7 @@ scorealphasum <- function(ba, bb, data, A, a, bg, br, t, me2){
     me2[[2]] <- e2
     me2 <<- me2
     vsum <- apply(do.call(cbind, mclapply(1 :n,  scorealpha, data, ba, bb, A, a, bg, br, t, me2, mc.cores = 20)), 1, sum,  na.rm = T) #/n^(1/2)#* (oba)
+    return(vsum)
 #    1/2 * sqrt(t(vsum) %*% vsum)
     #mean(do.call(rbind, lapply(1 :n, scorealpha, data,   ba, bb, A, a, bg, br, t, me2)))
 }
@@ -423,13 +424,13 @@ dscorealphasum <- function(ba, bb, data, A, a, bg, br, t, me2){
     e2 <- t(ginv(t(A2)%*% A2) %*% (t(A2) %*% t(b2)))
     me2[[2]] <- e2
     vsum <- apply(do.call(cbind, mclapply(1 :n,  dscorealpha, data, ba, bb, A, a, bg, br, t, me2, mc.cores = 20)), 1, mean,  na.rm = T) #* (oba)
+    return(vsum)
 #    sqrt(t(vsum) %*% vsum)
     #mean(do.call(rbind, lapply(1 :n, scorealpha, data,   ba, bb, A, a, bg, br, t, me2)))
 }
 
 tryscorealphasum <- function(ba, bb, data, A, a, bg, br, t, me2){
     res <- try(scorealphasum(ba, bb, data, A, a, bg, br, t, me2))
-    if(class(res) == "try-error")
         #browser()
     res
 }
@@ -720,7 +721,7 @@ myintegral <- function(fun, low, upper, ...){
 }
 
 ####test code###########
-
+sta <- 1
 for(itr  in sta:(sta + 99)){
     m <- 20
     mtau <- 25
@@ -751,6 +752,6 @@ for(j in 1: 2){
 mbeta[itr, ] <- (fmbeta(data, bb, A, a, bg, br))
 }
  lmba[[itr]] <- mba
-save(mbeta, lmba, file = paste(sta, bb, res, sep = "_"))
+save(mbeta, lmba, file = paste(paste("res/", sta, sep = ""),  bb, res, sep = "_"))
 }
 
