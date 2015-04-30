@@ -720,7 +720,10 @@ myintegral <- function(fun, low, upper, ...){
 }
 
 ####test code###########
-for(itr  in 1:1000){
+
+for(itr  in sta:(sta + 99)){
+    m <- 20
+    mtau <- 25
     tau  <- 2.5
     bb <- 0.5
     data <- simu(500, v, bb, 0.5, 2, tau)
@@ -738,16 +741,16 @@ for(itr  in 1:1000){
     A <- iniA
     a <- inia
 for(j in 1: 2){
-for(i in 1 : lmt){
-    
-    mba[i, ] <- fmb(i, mt, bb, A, a, bg, br)
-}
+#for(i in 1 : lmt){
+    mba <- do.call(rbind, mclapply(1:lmt, fmb, mt, bb, A, a, bg, br, mc.cores = 10))
+   # mba[i, ] <- fmb(i, mt, bb, A, a, bg, br)
+#}
         A <- approxfun(mt, mba[, 1], method = "linear", yleft = 0, rule = 2)
         a <- approxfun(mt, mba[, 2], method = "linear", yleft = 0, rule = 2)    
 
 mbeta[itr, ] <- (fmbeta(data, bb, A, a, bg, br))
 }
  lmba[[itr]] <- mba
-
+save(mbeta, lmba, file = paste(sta, bb, res, sep = "_"))
 }
 
