@@ -736,7 +736,7 @@ lmba <- vector("list")
 for(itr  in sta:(sta + 19)){
     print(itr)
     set.seed(itr + 2015)
-    m <- 15
+    m <- 20
     mtau <- 25
     tau  <- 2.5
     bb <- 0.5
