@@ -35,7 +35,7 @@ a <- inia
 #A, a functions for hazards, bg, chosen gamma values, br, the probability.
 
 fb2 <- function(A, a,  bb, bg, x, t){
-    expbbx <- exp(x %*% bb)
+    expbbx <- exp(matrix(x, nrow = 1) %*% matrix(bb, ncol = 1))
     integrand1 <- function(s, i){
         As <- A(s)#A(t) + a(t) * (s - t)#A(s)
         as <- a(s)#a(t)#a(s)
@@ -95,7 +95,7 @@ fA2 <- function(A, a, bb, bg, br, x, t){
 
 
 fb21 <- function(ba,  bb, Afun, afun,  bg, x, t){
-    expbbx <- exp(x %*% bb)
+    expbbx <- exp(x * bb)#exp(matrix(x, nrow = 1) %*% matrix(bb, ncol = 1))
     integrand1 <- function(s, i){
         As <- ba[1] + ba[2] * (s - t)#A(s)
         as <- ba[2]#a(s)
@@ -141,7 +141,7 @@ fb21 <- function(ba,  bb, Afun, afun,  bg, x, t){
 }
 fA21 <- function(ba, bb, Afun, afun, bg, br, x, t){
     mA2 <- matrix(NA, m, m)
-    expbbx <- exp(x %*% bb)
+    expbbx <- exp(x * bb)#exp(matrix(x, nrow = 1) %*% matrix(bb, ncol = 1))
     integrand <- function(s, i, j){
         As <- ba[1] + ba[2] * (s - t)#A(s)
         as <- ba[2]#a(s)
@@ -438,14 +438,14 @@ fmb <- function(i, mt, bb, A, a, bg, br){
     t <- mt[i]
     me2 <- vector("list")# mclapply(1 : n, gete2, A, a, bb, bg, br, t, data, mc.cores = 10)
     if(t <= 2){
-         temp <- spg(c(A(t), a(t)), tryscorealphasum, gr= NULL, method=1, lower=c(0, 0.001), upper=c(2, 2), project=NULL, projectArgs=NULL, control=list(maxit = 30, ftol = 1e-8, gtol = 1e-5), quiet=FALSE,  bb, data, A, a, bg, br, t, me2)#dfsane((c(A(t) , a(t))), dscorealphasum, method = 2, control = list(tol = 1e-5), quiet = FALSE,  bb, data, A, a, bg, br, t, me2)##dfsane((c(A(t), a(t))),tryscorealphasum, method = 2, control = list(tol = 1e-5), quiet = FALSE,  bb, data, A, a, bg, br, t, me2)#####m## #### optim(c(A(t), a(t)) , tryscorealphasum, gr = NULL, bb, data, A, a, bg, br, t, me2, method = "L-BFGS-B", lower = c(0, 0.001), upper = c(2, 2), control = list(), hessian = FALSE)# ####
+         temp <- spg(c(iniA(t), inia(t)), tryscorealphasum, gr= NULL, method=1, lower=c(0, 0.001), upper=c(2, 2), project=NULL, projectArgs=NULL, control=list(maxit = 30, ftol = 1e-8, gtol = 1e-5), quiet=FALSE,  alertConvergence = TRUE, bb, data, A, a, bg, br, t, me2)#dfsane((c(A(t) , a(t))), dscorealphasum, method = 2, control = list(tol = 1e-5), quiet = FALSE,  bb, data, A, a, bg, br, t, me2)##dfsane((c(A(t), a(t))),tryscorealphasum, method = 2, control = list(tol = 1e-5), quiet = FALSE,  bb, data, A, a, bg, br, t, me2)#####m## #### optim(c(A(t), a(t)) , tryscorealphasum, gr = NULL, bb, data, A, a, bg, br, t, me2, method = "L-BFGS-B", lower = c(0, 0.001), upper = c(2, 2), control = list(), hessian = FALSE)# ####
       #  print(temp$convergence)
       #  print(temp$value)
        # print(temp$gradient)
         #print(temp$message)
     temp$par
 }else{
-        temp <- spg(c(A(t), a(t)), tryscorealphasum, gr= NULL, method=1, lower=c(0, 0.001), upper=c(30, 8), project=NULL, projectArgs=NULL, control=list(maxit = 30, ftol = 1e-8, gtol = 1e-5), quiet=FALSE,  bb, data, A, a, bg, br, t, me2)#dfsane((c(A(t) , a(t))), dscorealphasum, method = 2, control = list(tol = 1e-5), quiet = FALSE,  bb, data, A, a, bg, br, t, me2)##dfsane((c(A(t), a(t))),tryscorealphasum, method = 2, control = list(tol = 1e-5), quiet = FALSE,  bb, data, A, a, bg, br, t, me2)#####m## #### optim(c(A(t), a(t)) , tryscorealphasum, gr = NULL, bb, data, A, a, bg, br, t, me2, method = "L-BFGS-B", lower = c(0, 0.001), upper = c(2, 2), control = list(), hessian = FALSE)# ####
+        temp <- spg(c(iniA(t), inia(t)), tryscorealphasum, gr= NULL, method=1, lower=c(0, 0.001), upper=c(30, 8), project=NULL, projectArgs=NULL, control=list(maxit = 30, ftol = 1e-8, gtol = 1e-5), quiet=FALSE,  alertConvergence = TRUE, bb, data, A, a, bg, br, t, me2)#dfsane((c(A(t) , a(t))), dscorealphasum, method = 2, control = list(tol = 1e-5), quiet = FALSE,  bb, data, A, a, bg, br, t, me2)##dfsane((c(A(t), a(t))),tryscorealphasum, method = 2, control = list(tol = 1e-5), quiet = FALSE,  bb, data, A, a, bg, br, t, me2)#####m## #### optim(c(A(t), a(t)) , tryscorealphasum, gr = NULL, bb, data, A, a, bg, br, t, me2, method = "L-BFGS-B", lower = c(0, 0.001), upper = c(2, 2), control = list(), hessian = FALSE)# ####
        # print(temp$convergence)
        # print(temp$value)
        # print(temp$gradient)
@@ -464,7 +464,7 @@ tryfmb <- function(i, mt, bb, A, a, bg, br){
 
 ######function for bb###############
 fb1 <- function(A, a, bb, bg, x){
-    expbbx <- exp(x %*% bb)
+    expbbx <- exp(x*bb)#exp(x %*% bb)
     integrand <- function(s, i, x){
         mu <-  A(s) *   expbbx
         (ddG(mu, bg, br)/dG(mu, bg, br) * mu * x + x) * exp(-bg[i] * mu) * (bg[i] * a(s) * expbbx- dG(mu, bg, br)* a(s)*  expbbx ) 
@@ -485,7 +485,7 @@ fb1 <- function(A, a, bb, bg, x){
 
 fA1 <- function(A, a, bb, bg, br, x){
     mA1 <- matrix(NA, m, m)
-    expbbx <- exp(x %*% bb)
+    expbbx <- exp(x*bb)#exp(x %*% bb)
     integrand <- function(s, i, j){
         mu <-  A(s) *  expbbx
         expbgbbx <- exp(-bg * A(s) * expbbx)
@@ -516,7 +516,7 @@ fA1 <- function(A, a, bb, bg, br, x){
 }
 
 fb12 <- function(A, a, bb, bg, x){
-    expbbx <- exp(x %*% bb)
+    expbbx <- exp(x * bb)#exp(x %*% bb)
     integrand <- function(s, i, x){
         mu <-  A(s) *   expbbx
         ((ddG(mu, bg, br)/dG(mu, bg, br) * mu * x + x) * (s<= tau) - dG(mu, bg, br)*  mu * x) * (bg[i] * a(s)* expbbx) * exp(-A(s)* expbbx * bg[i])
@@ -536,7 +536,7 @@ fb12 <- function(A, a, bb, bg, x){
 
 fA12 <- function(A, a, bb, bg, br, x){
     mA1 <- matrix(NA, m, m)
-    expbbx <- exp(x %*% bb)
+    expbbx <- exp(x*bb)#exp(x %*% bb)
     integrand <- function(s, i, j){
         mu <-  A(s) *  expbbx
         expbgbbx <- exp(-bg * A(s) * expbbx)
@@ -701,7 +701,7 @@ tryscorebetasum <- function( bb,  data, A, a, bg, br){
 fmbeta <- function( data, bb, A, a, bg, br){
  #   me1 <- vector("list")#mclapply(1 : n, gete1, A, a, bb, bg, br,  data, mc.cores = 10)
  #temp <- dfsane(bb, dscorebetasum, method = 2, control = list(maxit = 30), quiet = FALSE, data, A, a, bg, br)#
-   temp <- spg(bb, tryscorebetasum, gr= NULL, method=3, lower= -1, upper=2, project=NULL, projectArgs=NULL, control=list(maxit = 15, ftol = 1e-6, gtol = 0.0001), quiet=FALSE,   data, A, a, bg, br)#optim(0.5, tryscorebetasum, gr = NULL, data, A, a, bg, br,   method = "L-BFGS-B", lower = -1, upper = 2, control = list(maxit = 30, REPORT = 1, pgtol = 1e-5, trace = 0), hessian = FALSE)#### 
+   temp <- spg(bb, tryscorebetasum, gr= NULL, method=3, lower= -1, upper=2, project=NULL, projectArgs=NULL, control=list(maxit = 15, ftol = 1e-6, gtol = 0.0001), quiet=FALSE, alertConvergence = TRUE,   data, A, a, bg, br)#optim(0.5, tryscorebetasum, gr = NULL, data, A, a, bg, br,   method = "L-BFGS-B", lower = -1, upper = 2, control = list(maxit = 30, REPORT = 1, pgtol = 1e-5, trace = 0), hessian = FALSE)#### 
  #   temp <- try(uniroot(dscorebetasum, c(-1, 2),  data, A, a, bg, br))
    # print(temp$convergence)
  #   temp[[1]]
@@ -728,15 +728,15 @@ myintegral <- function(fun, low, upper, ...){
     return (as.double( (x[idx] - x[idx-1]) %*% (y[idx] + y[idx-1])) / 2)
     
 }
-
 ####test code###########
 sta <- 1
 mbeta <- matrix(NA, 100, 2)
 lmba <- vector("list")
+
 for(itr  in sta:(sta + 19)){
     print(itr)
     set.seed(itr + 2015)
-    m <- 20
+    m <- 15
     mtau <- 25
     tau  <- 2.5
     bb <- 0.5
@@ -747,9 +747,11 @@ for(itr  in sta:(sta + 19)){
     n <- nrow(data)
     h <- bw.nrd(data[data[, 1] == 1, 2]) * n^{-1/15}
     mij <- as.matrix(expand.grid(1:m, 1:m))
-    lmt <- 10
+    lmt <- 20
     #mt <- seq(quantile(data[data[, 1] == 1, 2], 0.1), quantile(data[data[, 1] == 1, 2], 0.8), length.out = lmt)
     mt <- c(seq(quantile(t, 0), 2, length.out = lmt - 1), max(t))
+    trueA <- A(mt) 
+    truea <- a(mt)
     mba <- matrix(0, lmt, 2)
     omba <- mba
     mtau <- max(t)
@@ -774,6 +776,6 @@ mbb <- try(fmbeta(data, obb, A, a, bg, br))
     
 }
  
-save(mba, mbb, file = paste(paste("../res/", itr, sep = ""),  obb, "res", sep = "_"))
+save(mba, mbb, trueA, truea,  file = paste(paste("../res/", itr, sep = ""),  obb, "res", sep = "_"))
 }
 
